@@ -330,7 +330,7 @@ AC_CHECK_HEADERS(strings.h stdint.h unistd.h dirent.h malloc.h inttypes.h \
   quota.h sys/fs/quota_common.h \
   mntent.h sys/mnttab.h sys/event.h sys/time.h sys/mkdev.h linux/dqblk_xfs.h \
   xfs/xqm.h execinfo.h ucontext.h malloc_np.h sys/utsname.h sys/vmount.h \
-  sys/utsname.h glob.h linux/falloc.h ucred.h sys/ucred.h)
+  sys/utsname.h glob.h sys/types.h linux/falloc.h ucred.h sys/ucred.h)
 
 CC_CLANG
 AC_CC_PIE
@@ -355,7 +355,7 @@ AC_CHECK_FUNCS(fcntl flock lockf inet_aton sigaction getpagesize madvise \
 	       setrlimit setproctitle seteuid setreuid setegid setresgid \
 	       getmntinfo setpriority quotactl getmntent kqueue kevent \
 	       backtrace_symbols walkcontext dirfd clearenv \
-	       malloc_usable_size glob fallocate posix_fadvise \
+	       malloc_usable_size glob posix_fadvise \
 	       getpeereid getpeerucred inotify_init timegm)
 
 DOVECOT_SOCKPEERCRED
@@ -389,7 +389,6 @@ AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(void *)
 AC_CHECK_SIZEOF(long long)
 
-AC_SYS_LARGEFILE
 AC_CHECK_TYPES(_Bool)
 
 AC_CHECK_TYPE(uoff_t, [

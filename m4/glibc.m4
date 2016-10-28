@@ -14,6 +14,42 @@ AC_DEFUN([DOVECOT_GLIBC], [
   if test "$i_cv_have_glibc" = "yes"; then
     AC_DEFINE(PREAD_WRAPPERS,, [Define if pread/pwrite needs _XOPEN_SOURCE 500])
   fi
+  dnl check for valid fallocate() function
+  dnl with 32 bits glibc 2.10, fallocate() exists but not fallocate64()
+  dnl when _FILE_OFFSET_BITS==64, fallocate() is redirect to fallocate64()
+  dnl and program can't be linked.
+  dnl AC_CHECK_FUNC can't catch such errors since it's redefining
+  dnl function prototype.
+  AC_SYS_LARGEFILE
+  AC_MSG_CHECKING([for valid fallocate() function])
+  AC_LINK_IFELSE([
+    AC_LANG_PROGRAM([[
+      #define _GNU_SOURCE
+      #ifdef HAVE_UNISTD_H
+      # include <unistd.h>
+      #endif
+      #ifdef HAVE_SYS_TYPES_H
+      # include <sys/types.h>
+      #endif
+      #ifdef HAVE_LINUX_FALLOC_H
+      # include <linux/falloc.h>
+      #endif
+      #include <fcntl.h>
+    ]],[[
+      long ret;
+
+      ret = fallocate(0, FALLOC_FL_KEEP_SIZE, 0xfffffffful, 0xfffffffful);
+
+      if (ret != 0) {
+         return 1;
+      }
+    ]])
+  ],[
+      AC_MSG_RESULT([yes])
+      AC_DEFINE(HAVE_FALLOCATE,1,[Have valid fallocate() function])
+    ],[
+      AC_MSG_RESULT([no])
+  ])
   dnl * Old glibcs have broken posix_fallocate(). Make sure not to use it.
   dnl * It may also be broken in AIX.
   AC_CACHE_CHECK([whether posix_fallocate() works],i_cv_posix_fallocate_works,[
